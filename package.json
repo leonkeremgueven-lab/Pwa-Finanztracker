@@ -1,0 +1,33 @@
+{
+  "name": "finanz",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "homepage": "https://leonkeremgueven-lab.github.io/Pwa-Finanztracker",
+  "scripts": {
+    "dev": "vite",
+    "postinstall": "node scripts/copy-tesseract.mjs",
+    "prebuild": "node scripts/copy-tesseract.mjs",
+    "build": "vite build",
+    "preview": "vite preview",
+    "icons": "node scripts/generate-icons.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "idb": "^8.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.15.0",
+    "tesseract.js": "^5.1.1"
+  },
+  "devDependencies": {
+    "@tesseract.js-data/deu": "^1.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "gh-pages": "^6.2.0",
+    "sharp": "^0.33.5",
+    "vite": "^5.4.11",
+    "vite-plugin-pwa": "^0.21.1"
+  }
+}
