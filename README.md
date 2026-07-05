@@ -7,7 +7,8 @@ Beträge in EUR (de-DE), intern immer als Integer in Cent.
 
 ## Features
 
-- **Schnelleingabe**: Betrag tippen → Kategorie antippen → gespeichert (2 Taps + Betrag). Vorlagen-Chips buchen mit 1 Tap.
+- **Schnelleingabe**: Betrag tippen → Kategorie antippen → grüner Speichern-Button. Vorlagen-Chips buchen mit 1 Tap.
+- **Grundkonfiguration**: feste monatliche Einnahmen (Gehalt …) und Ausgaben (Miete, Strom …) einmal eintragen, nach Kategorien gegliedert — sie werden jeden Monat automatisch verbucht.
 - **Beleg-Scanner**: Foto vom Kassenbon → Offline-OCR (Tesseract.js, self-hosted, deutsch) → Gesamtbetrag wird erkannt (SUMME/GESAMT/TOTAL-Heuristik inkl. OCR-Verschreiber) und zur Bestätigung vorausgefüllt. Das Foto wird nie gespeichert.
 - **Historie** mit Suche, Filtern (Kategorie, Typ, Zeitraum, Betrag), Bearbeiten und Löschen mit 5-Sekunden-Undo.
 - **Budgets** pro Kategorie mit Ampel-Fortschritt (>80 % amber, >100 % rot).

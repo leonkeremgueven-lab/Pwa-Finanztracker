@@ -173,23 +173,34 @@ export default function QuickAdd({ prefill, editTx, onClose }) {
             </button>
           </div>
         ) : (
-          <div className="cat-grid">
-            {cats.map((c) => (
-              <button
-                key={c.id}
-                className={categoryId === c.id ? 'selected' : ''}
-                disabled={saving}
-                onClick={() => {
-                  setCategoryId(c.id);
-                  if (amount > 0) save(c.id);
-                  else toast('Erst Betrag eintippen, dann Kategorie wählen.', { error: true });
-                }}
-              >
-                <span className="cat-icon" aria-hidden>{c.icon}</span>
-                <span>{c.name}</span>
-              </button>
-            ))}
-          </div>
+          <>
+            <div className="cat-grid">
+              {cats.map((c) => (
+                <button
+                  key={c.id}
+                  className={categoryId === c.id ? 'selected' : ''}
+                  disabled={saving}
+                  onClick={() => setCategoryId(c.id)}
+                >
+                  <span className="cat-icon" aria-hidden>{c.icon}</span>
+                  <span>{c.name}</span>
+                </button>
+              ))}
+            </div>
+            <button
+              className="btn btn-primary btn-block"
+              style={{ marginTop: 14, minHeight: 52, fontSize: '1.05rem' }}
+              disabled={amount <= 0 || !categoryId || saving}
+              onClick={() => save()}
+            >
+              ✓ {editTx ? 'Änderungen speichern' : 'Buchung speichern'}
+            </button>
+            {(amount <= 0 || !categoryId) && (
+              <p className="small muted" style={{ textAlign: 'center', margin: '6px 0 0' }}>
+                {amount <= 0 ? 'Betrag eintippen' : 'Kategorie wählen'}, dann speichern.
+              </p>
+            )}
+          </>
         )}
 
         <details className="optional-fields">
@@ -216,12 +227,6 @@ export default function QuickAdd({ prefill, editTx, onClose }) {
             )}
           </div>
         </details>
-
-        {editTx && type !== 'goal_deposit' && (
-          <button className="btn btn-primary btn-block" style={{ marginTop: 12 }} disabled={!canSave || !categoryId || saving} onClick={() => save()}>
-            Änderungen speichern
-          </button>
-        )}
 
         {!editTx && !prefill && (
           <button className="btn btn-ghost btn-block" style={{ marginTop: 10 }} onClick={() => { onClose(); openScanner(); }}>

@@ -26,6 +26,7 @@ export default function App() {
     snapshots: [],
   });
   const [activeTab, setActiveTab] = useState('home');
+  const [moreSection, setMoreSection] = useState(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scanResult, setScanResult] = useState(null); // vorbefüllter Betrag aus dem Scanner
@@ -95,6 +96,10 @@ export default function App() {
     openEdit,
     openScanner: () => setScannerOpen(true),
     setActiveTab,
+    openMore: (section) => {
+      setMoreSection(section);
+      setActiveTab('more');
+    },
   };
 
   return (
@@ -104,7 +109,7 @@ export default function App() {
         {activeTab === 'history' && <History />}
         {activeTab === 'budgets' && <BudgetsGoals />}
         {activeTab === 'analytics' && <Analytics />}
-        {activeTab === 'more' && <More />}
+        {activeTab === 'more' && <More key={moreSection ?? 'menu'} initialSection={moreSection} />}
       </div>
 
       <div className="fab-wrap">
@@ -121,7 +126,14 @@ export default function App() {
         </button>
       </div>
 
-      <TabBar tabs={TABS} active={activeTab} onChange={setActiveTab} />
+      <TabBar
+        tabs={TABS}
+        active={activeTab}
+        onChange={(tab) => {
+          setMoreSection(null);
+          setActiveTab(tab);
+        }}
+      />
 
       {quickAddOpen && (
         <QuickAdd

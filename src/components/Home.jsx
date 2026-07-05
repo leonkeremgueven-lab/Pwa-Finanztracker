@@ -7,7 +7,7 @@ import { monthlyFixedCosts } from '../logic/recurring.js';
 import { fmtCents, fmtSigned, fmtMonth } from '../utils/format.js';
 
 export default function Home() {
-  const { transactions, budgets, categories, recurring, loading, setActiveTab } = useApp();
+  const { transactions, budgets, categories, recurring, loading, setActiveTab, openMore } = useApp();
   const [reportMonth, setReportMonth] = useState(null);
   const key = currentMonthKey();
 
@@ -48,6 +48,18 @@ export default function Home() {
       </div>
 
       <ReportTeaser onOpen={setReportMonth} />
+
+      {recurring.filter((r) => r.interval === 'monthly').length === 0 && (
+        <button className="card" style={{ width: '100%', textAlign: 'left', display: 'block' }} onClick={() => openMore('baseconfig')}>
+          <div className="card-title">💶 Grundkonfiguration einrichten</div>
+          <div className="row-between">
+            <span className="small muted">
+              Gehalt, Miete & feste Kosten einmal eintragen — sie werden jeden Monat automatisch verbucht.
+            </span>
+            <span className="pos small">Los ›</span>
+          </div>
+        </button>
+      )}
 
       {attention.length > 0 && (
         <button className="card" style={{ width: '100%', textAlign: 'left', display: 'block' }} onClick={() => setActiveTab('budgets')}>
