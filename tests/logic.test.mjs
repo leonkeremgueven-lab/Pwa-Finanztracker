@@ -220,3 +220,78 @@ test('Report-Archiv: nur vergangene Monate mit Buchungen', () => {
   assert.deepEqual(reportableMonths(TXS, '2026-07'), ['2026-06', '2026-05']);
   assert.deepEqual(reportableMonths(TXS, '2026-06'), ['2026-05']);
 });
+
+// ---------- Perioden-Analyse & Insights ----------
+
+test('weekStartIso: Montag der Woche, über Monatsgrenze', async () => {
+  const { weekStartIso, isoWeekNumber } = await import('../src/logic/stats.js');
+  assert.equal(weekStartIso('2026-07-05'), '2026-06-29'); // So -> Mo davor
+  assert.equal(weekStartIso('2026-06-29'), '2026-06-29'); // Mo bleibt Mo
+  assert.equal(isoWeekNumber('2026-01-01'), 1);
+});
+
+test('totalsByPeriod: wöchentliche und jährliche Buckets, Kategorie-Filter', async () => {
+  const { totalsByPeriod } = await import('../src/logic/stats.js');
+  const now = new Date(2026, 6, 5); // So, 05.07.2026 -> Woche ab Mo 29.06.
+  const txs = [
+    { type: 'expense', amount: 1000, categoryId: 'a', date: '2026-07-03' },
+    { type: 'expense', amount: 500, categoryId: 'b', date: '2026-07-01' },
+    { type: 'expense', amount: 700, categoryId: 'a', date: '2026-06-25' }, // Vorwoche
+    { type: 'income', amount: 9000, categoryId: 'x', date: '2026-06-30' },
+  ];
+  const weeks = totalsByPeriod(txs, 'week', 2, now);
+  assert.deepEqual(weeks.map((w) => w.key), ['2026-06-22', '2026-06-29']);
+  assert.equal(weeks[0].expense, 700);
+  assert.equal(weeks[1].expense, 1500);
+  assert.equal(weeks[1].income, 9000);
+  // Kategorie-Filter wirkt nur auf Ausgaben
+  const onlyA = totalsByPeriod(txs, 'week', 2, now, new Set(['a']));
+  assert.equal(onlyA[1].expense, 1000);
+  assert.equal(onlyA[1].income, 9000);
+  const years = totalsByPeriod(txs, 'year', 2, now);
+  assert.deepEqual(years.map((y) => y.key), ['2025', '2026']);
+  assert.equal(years[1].expense, 2200);
+});
+
+test('categoryMonthlySeries: eine Zeile pro Monat, Kategorien als Spalten', async () => {
+  const { categoryMonthlySeries } = await import('../src/logic/stats.js');
+  const rows = categoryMonthlySeries(
+    [
+      { type: 'expense', amount: 100, categoryId: 'a', date: '2026-06-01' },
+      { type: 'expense', amount: 200, categoryId: 'a', date: '2026-06-20' },
+      { type: 'expense', amount: 300, categoryId: 'b', date: '2026-07-01' },
+      { type: 'income', amount: 999, categoryId: 'a', date: '2026-06-05' },
+    ],
+    ['a', 'b'],
+    ['2026-06', '2026-07']
+  );
+  assert.deepEqual(rows, [
+    { key: '2026-06', a: 300, b: 0 },
+    { key: '2026-07', a: 0, b: 300 },
+  ]);
+});
+
+test('trendInsights: Hochrechnung, Kostentreiber und Fixkosten-Quote', async () => {
+  const { trendInsights } = await import('../src/logic/stats.js');
+  const now = new Date(2026, 6, 10); // 10.07. -> 10 von 31 Tagen
+  const cats = [
+    { id: 'a', name: 'Essen', icon: '🍽️' },
+    { id: 'b', name: 'Freizeit', icon: '🎳' },
+  ];
+  const txs = [
+    { type: 'expense', amount: 31000, categoryId: 'a', date: '2026-07-05' }, // 310 € in 10 Tagen -> ~961 € projiziert
+    { type: 'expense', amount: 10000, categoryId: 'a', date: '2026-06-15' },
+    { type: 'expense', amount: 20000, categoryId: 'b', date: '2026-06-10' },
+    { type: 'income', amount: 200000, categoryId: 'x', date: '2026-06-01' },
+  ];
+  const ins = trendInsights(txs, cats, 50000, now);
+  const proj = ins.find((i) => i.id === 'projection');
+  assert.ok(proj, 'Hochrechnung vorhanden');
+  assert.equal(proj.value, Math.round((31000 / 10) * 31));
+  const mover = ins.find((i) => i.id === 'mover');
+  assert.ok(mover, 'Kostentreiber vorhanden');
+  assert.equal(mover.value, 21000); // Essen: 310 statt 100 €
+  const fixed = ins.find((i) => i.id === 'fixed');
+  assert.ok(fixed, 'Fixkosten-Quote vorhanden');
+  assert.ok(fixed.text.includes('25 %')); // 500 / 2000 €
+});

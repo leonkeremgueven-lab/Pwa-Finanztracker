@@ -523,3 +523,76 @@ details.optional-fields[open] summary::before { content: '▾ '; }
 
 .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .filter-bar select, .filter-bar input { width: auto; flex: 1; min-width: 120px; }
+
+/* ---- Analytics: KPI-Kacheln, Insights, Filter ---- */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+@media (min-width: 768px) {
+  .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.kpi {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.kpi-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-2);
+  font-weight: 600;
+}
+.kpi-value { font-size: 1.25rem; font-weight: 700; }
+.kpi-delta { font-size: 0.72rem; }
+
+.insight { display: flex; gap: 10px; align-items: flex-start; }
+.insight-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+.dropdown-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  margin: 8px 0 12px;
+  background: var(--bg);
+}
+.dropdown-panel summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 0;
+  font-size: 0.88rem;
+  color: var(--text-2);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.dropdown-panel summary::before { content: '▸ '; margin-right: 4px; }
+.dropdown-panel[open] summary::before { content: '▾ '; }
+.dropdown-panel[open] { padding-bottom: 10px; }
+.checkbox-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; }
+.checkbox-list input[type='checkbox'] { accent-color: var(--accent); width: 18px; height: 18px; }
+
+.cat-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.share-bar {
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  margin-top: 3px;
+}
+.share-bar > div { height: 100%; border-radius: 4px; transition: width 300ms ease; }
